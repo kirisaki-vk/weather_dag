@@ -5,7 +5,10 @@ from os import path
 import json
 from datetime import datetime
 
-def get_current_data_from_cities(*cities):
+def get_current_data_from_cities():
+    with open(f'{os.getenv("OUTPUT_FILES_PATH")}/city_data.json', "r") as file:
+        cities = json.load(file)
+        
     for city in cities:
         extract_data(city)
         
@@ -25,7 +28,7 @@ def extract_data(city):
     if not path.exists(OUTPUT_FILES_PATH):
         os.makedirs(f'{OUTPUT_FILES_PATH}', exist_ok=True)
     
-    print("Downloading report for the city ", city) 
+    print("Downloading report for the city ", city['name']) 
     
     air_pollution_data_dir = f'{OUTPUT_FILES_PATH}/air_pollution'
     weather_data_dir = f'{OUTPUT_FILES_PATH}/weather'
@@ -33,11 +36,15 @@ def extract_data(city):
     os.makedirs(air_pollution_data_dir, exist_ok=True)
     os.makedirs(weather_data_dir, exist_ok=True)
     
-    with open(f'{air_pollution_data_dir}/{city}_{datetime.now().strftime(date_suffix_format)}.json', 'w') as file:
-        file.write(json.dumps(get_current_air_pollution(city), indent=4))
+    with open(f'{air_pollution_data_dir}/{city['name']}_{datetime.now().strftime(date_suffix_format)}.json', 'w') as file:
+        data = get_current_air_pollution(city['name'])
+        data['id_city'] = city['id_city'] 
+        file.write(json.dumps(data, indent=4))
     
-    with open(f'{weather_data_dir}/{city}_{datetime.now().strftime(date_suffix_format)}.json', 'w') as file:
-        file.write(json.dumps(get_city_weather(city), indent=4))
+    with open(f'{weather_data_dir}/{city['name']}_{datetime.now().strftime(date_suffix_format)}.json', 'w') as file:
+        data = get_city_weather(city['name'])
+        data['id_city'] = city['id_city']
+        file.write(json.dumps(data, indent=4))
     
 def extract_available_conditions():
     """

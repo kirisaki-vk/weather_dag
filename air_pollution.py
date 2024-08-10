@@ -30,7 +30,7 @@ def get_current_air_pollution(country_name):
     """
     country_coordinates = get_city_coordinates(country_name)
     
-    return json.loads(airpolutionClient.request("GET", os.getenv("AIRPOLLUTION_API_URL"), params={
+    return json.loads(airpolutionClient.request("GET", "http://api.openweathermap.org/data/2.5/air_pollution", params={
         "lat": country_coordinates['lat'],
         "lon": country_coordinates['lon'],
     }).read())
